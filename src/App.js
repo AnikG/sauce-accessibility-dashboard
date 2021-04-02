@@ -1,5 +1,6 @@
 import './App.css';
-//import './get-axe-data.ignore';
+import { axeResult } from './axe-result.js'
+import { summarizeAxeResults } from './axe-utils.js';
 
 function BigNumCard(props) {
   return (
@@ -21,7 +22,8 @@ function TableDataRow(props) {
 }
 
 function TableBodyRows(props) {
-  //TODO: props.tableValues is expected to be a Map() - how to test for it?
+  if (!(props.tableValues instanceof Map)) throw new Error('props.tableValues must be a Map.');
+
   const dataRows = [];
   for (const entry of props.tableValues) {
     dataRows.push(<TableDataRow key={entry[0]} name={entry[0]} value={entry[1]} />);
@@ -48,22 +50,29 @@ function TableCard(props) {
 }
 
 function App() {
-  const impactTable = new Map();
-  impactTable.set('Critical', 4);
-  impactTable.set('Serious', 6);
-  impactTable.set('Moderate', 12);
-  impactTable.set('Minor', 1);
+  // TODO for Sauce Labs - extract axeResult from the test log. Remember to delete the "./axe-result.js" import in this file.
+  let results = axeResult;
+
+  let summary = summarizeAxeResults(results.violations);
+  const numViolations = summary.nodeCount;
+  const { impactTable, /* typeTable */ } = summary;
+  summary = summarizeAxeResults(results.incomplete);
+  const numIncomplete = summary.nodeCount;
+  summary = summarizeAxeResults(results.passes);
+  const numPasses = summary.nodeCount;
+  const passRatio = (numPasses/(numPasses + numViolations + numIncomplete)).toFixed(2);
 
   return (
     <div>
       <nav>
-        <h1 style={{textAlign: "center"}}>Fixture for Accessibiltiy dashboard for Sauce Labs</h1>
+        <h1 style={{textAlign: "center", color: "orange"}}>Fixture for Accessibiltiy dashboard for Sauce Labs</h1>
         <br /><br />
       </nav>
-      <div className="dashboard" role="main" style={{border: '2px solid red'}}>
-        <BigNumCard title='Total Issues' value='123' explanation='This is the number of accessibility issues detected by axe for the entire test, including the results of multiple pages or page-states.' />
-        <BigNumCard title='Pass Ratio' value='79%' explanation='Number of issues found compared to the total number of checks performed. #fail / (#pass + #fail).' />
+      <div className="dashboard" role="main" style={{border: '2px dashed orange'}}>
+        <BigNumCard title='Total Issues' value={numViolations} explanation='This is the number of accessibility issues detected by axe for the entire test, including the results of multiple pages or page-states.' />
+        <BigNumCard title='Pass Ratio' value={passRatio} explanation='Number of issues found compared to the total number of checks performed. #fail / (#pass + #fail).' />
         <TableCard title='Issues by Severity' tableValues={impactTable} explanation='Critical issues represent the worst experience for people with certain disabilities.' />
+        {/* TODO: <TableCard title='Issues by Type' tableValues={typeTable} explanation='' />*/}
       </div>
     </div>
   );

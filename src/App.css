@@ -59,7 +59,7 @@ table.axe-table {
 }
 
 .axe-table th, td {
-  border: 1px solid var(--clr-gray-light);
+  /* border: 1px solid var(--clr-gray-light); */
   text-align: left;
   padding-left: 0.5em;
   padding-right: 0.5em;
