@@ -13,6 +13,7 @@ function summarizeViolations(axeResultArray) {
     let violations = 0;
 
     for (const test of axeResultArray) {
+        // eslint-disable-next-line
         for (const n of test.nodes) {
             incrementKeyCount(impacts, test.impact);
             incrementKeyCount(types, test.help);    
@@ -71,7 +72,7 @@ export function summarizeWdioLog(log) {
         incompleteCount += summarizeNonViolations(test.result.results.incomplete);
     }
 
-    return { testCount, violationCount, passCount, incompleteCount, impactTable, typeTable};
+    return { testCount, violationCount, passCount, incompleteCount, impactTable, typeTable };
 }
 
 /* TODO: Make real tests 
