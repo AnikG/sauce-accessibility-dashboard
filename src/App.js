@@ -1,6 +1,8 @@
 import './App.css';
-import { axeResult } from './axe-result.js'
-import { summarizeAxeResults } from './axe-utils.js';
+import { summarizeWdioLog } from './axe-utils.js';
+
+// TODO: Sauce Labs - replace the file being imported with a funtion that returns the wdioLog object
+import wdioLog from './wdio_test_log.json';
 
 function BigNumCard(props) {
   return (
@@ -49,30 +51,44 @@ function TableCard(props) {
   );
 }
 
-function App() {
-  // TODO for Sauce Labs - extract axeResult from the test log. Remember to delete the "./axe-result.js" import in this file.
-  let results = axeResult;
-
-  let summary = summarizeAxeResults(results.violations);
-  const numViolations = summary.nodeCount;
-  const { impactTable, /* typeTable */ } = summary;
-  summary = summarizeAxeResults(results.incomplete);
-  const numIncomplete = summary.nodeCount;
-  summary = summarizeAxeResults(results.passes);
-  const numPasses = summary.nodeCount;
-  const passRatio = (numPasses/(numPasses + numViolations + numIncomplete)).toFixed(2);
-
+function FixtureTitle() {
   return (
-    <div>
       <nav>
         <h1 style={{textAlign: "center", color: "orange"}}>Fixture for Accessibiltiy dashboard for Sauce Labs</h1>
         <br /><br />
       </nav>
-      <div className="dashboard" role="main" style={{border: '2px dashed orange'}}>
-        <BigNumCard title='Total Issues' value={numViolations} explanation='This is the number of accessibility issues detected by axe for the entire test, including the results of multiple pages or page-states.' />
-        <BigNumCard title='Pass Ratio' value={passRatio} explanation='Number of issues found compared to the total number of checks performed. #fail / (#pass + #fail).' />
-        <TableCard title='Issues by Severity' tableValues={impactTable} explanation='Critical issues represent the worst experience for people with certain disabilities.' />
-        {/* TODO: <TableCard title='Issues by Type' tableValues={typeTable} explanation='' />*/}
+  );
+}
+
+function App() {
+  if (wdioLog) {
+    const { testCount, violationCount, passCount, incompleteCount, impactTable} = summarizeWdioLog(wdioLog);
+    if (testCount > 0 ) {
+      const passRatio = (passCount/(passCount + violationCount + incompleteCount)).toFixed(2);
+      return (
+        <div>
+          <FixtureTitle />
+          <div className="dashboard" role="main" style={{border: '2px dashed orange'}}>
+            <BigNumCard title='axe Test Runs' value={testCount} explanation='This is the number of times the test run triggered axe accessibility testing.' /> 
+            <BigNumCard title='Total Issues' value={violationCount} explanation='This is the number of accessibility issues detected by axe for the entire test, including the results of multiple pages or page-states.' />
+            <BigNumCard title='Pass Ratio' value={passRatio} explanation='Number of issues found compared to the total number of checks performed. #pass / (#pass + #fail).' />
+            <TableCard title='Issues by Severity' tableValues={impactTable} explanation='Critical issues represent the worst experience for people with certain disabilities.' />
+            {/* TODO: Actually I think we should not do this because it is not relevant to users who don't know accessibility details <TableCard title='Issues by Type' tableValues={typeTable} explanation='' />*/}
+          </div>
+        </div>
+      );
+    }
+  }
+
+  return (
+    <div>
+      <FixtureTitle />
+      <div role="main" style={{border: '2px dashed orange', padding: '2em'}}>
+        <h2>No axe Test Runs were found in the log.</h2>
+        <hr />
+        <p>Resources:</p>
+        <p>TODO: Deque - Make the target page <a href="https://deque.com/saucelabs/getting-started">Getting Started with Accessibility Testing on Sauce</a></p>
+        <p>TODO: Deque - Make a more relevant video <a href="https://www.youtube.com/watch?v=-n5Ul7WPc3Y">Video tutorial on Accessibility Testing</a></p>
       </div>
     </div>
   );
