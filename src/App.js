@@ -2,7 +2,8 @@ import './App.css';
 import { summarizeWdioLog } from './axe-utils.js';
 
 // TODO: Sauce Labs - replace the file being imported with a funtion that returns the wdioLog object
-import wdioLog from './wdio_test_log.json';
+//import wdioLog from './wdio_test_log.json';
+import wdioLog from './java-log.json';
 
 function BigNumCard(props) {
   return (

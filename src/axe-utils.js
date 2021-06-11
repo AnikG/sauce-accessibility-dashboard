@@ -32,6 +32,24 @@ function summarizeNonViolations(axeResultArray) {
     return nodeCount;
 }
 
+function findAxeResult(logNode) {
+    let axeResult = false;
+
+    if (logNode.result && 
+        logNode.result.results && 
+        logNode.result.results.testEngine && 
+        logNode.result.results.testEngine.name === 'axe-core') {
+            axeResult = logNode.result.results;
+        }
+    else if (logNode.result && 
+        logNode.result && 
+        logNode.result.testEngine && 
+        logNode.result.testEngine.name === 'axe-core') {
+            axeResult = logNode.result;
+        }
+    return axeResult;
+}
+
 export function summarizeWdioLog(log) {
 //function summarizeWdioLog(log) {
     let testCount = 0;
@@ -46,17 +64,25 @@ export function summarizeWdioLog(log) {
     impactTable.set('moderate', 0);
     impactTable.set('minor', 0);
     
-    const axeResultsArray = log.filter((logNode) => {
-        return (logNode.result && 
-                logNode.result.results && 
-                logNode.result.results.testEngine && 
-                logNode.result.results.testEngine.name === 'axe-core');
+    // const axeResultsArray = log.filter((logNode) => {
+    //     return (logNode.result && 
+    //             logNode.result.results && 
+    //             logNode.result.results.testEngine && 
+    //             logNode.result.results.testEngine.name === 'axe-core');
+    // });
+
+    const axeResultsArray = [];
+    log.forEach( (logNode) => {
+        const axeResult = findAxeResult(logNode);
+        if (axeResult) {
+            axeResultsArray.push(axeResult);
+        }
     });
 
     for (const test of axeResultsArray) {
         testCount++;
         
-        const { violations, impacts, types } = summarizeViolations(test.result.results.violations);
+        const { violations, impacts, types } = summarizeViolations(test.violations);
         violationCount += violations;
         for (const entry of impactTable) {
             if (impacts.has(entry[0])) {
@@ -68,8 +94,8 @@ export function summarizeWdioLog(log) {
             incrementKeyCount(typeTable, entry[0], entry[1]);
         }
 
-        passCount += summarizeNonViolations(test.result.results.passes);
-        incompleteCount += summarizeNonViolations(test.result.results.incomplete);
+        passCount += summarizeNonViolations(test.passes);
+        incompleteCount += summarizeNonViolations(test.incomplete);
     }
 
     return { testCount, violationCount, passCount, incompleteCount, impactTable, typeTable };
