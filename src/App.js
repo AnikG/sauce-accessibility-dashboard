@@ -1,9 +1,9 @@
 import './App.css';
 import { summarizeWdioLog } from './axe-utils.js';
 
-// TODO: Sauce Labs - replace the file being imported with a funtion that returns the wdioLog object
+// TODO: Sauce Labs - replace the file being imported with a function that returns the wdioLog object
 //import wdioLog from './wdio_test_log.json';
-import wdioLog from './java-log.json';
+import wdioLog from './java_test_log.json';
 
 function BigNumCard(props) {
   return (
@@ -55,7 +55,7 @@ function TableCard(props) {
 function FixtureTitle() {
   return (
       <nav>
-        <h1 style={{textAlign: "center", color: "orange"}}>Fixture for Accessibiltiy dashboard for Sauce Labs</h1>
+        <h1 style={{textAlign: "center", color: "orange"}}>Fixture for Accessibility dashboard for Sauce Labs</h1>
         <br /><br />
       </nav>
   );

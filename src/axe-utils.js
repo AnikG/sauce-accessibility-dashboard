@@ -63,13 +63,6 @@ export function summarizeWdioLog(log) {
     impactTable.set('serious', 0);
     impactTable.set('moderate', 0);
     impactTable.set('minor', 0);
-    
-    // const axeResultsArray = log.filter((logNode) => {
-    //     return (logNode.result && 
-    //             logNode.result.results && 
-    //             logNode.result.results.testEngine && 
-    //             logNode.result.results.testEngine.name === 'axe-core');
-    // });
 
     const axeResultsArray = [];
     log.forEach( (logNode) => {
